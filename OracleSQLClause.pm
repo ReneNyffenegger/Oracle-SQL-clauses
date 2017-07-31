@@ -24,13 +24,19 @@ sub fetch_clause {
   }
   else {
   
-    print "have to fetche: $clause\n";
+    print "have to fetch: >$clause<\n";
 
     my $ua   = LWP::UserAgent->new or die;
     my $req  = HTTP::Request ->new(GET => "https://docs.oracle.com/database/122/SQLRF/img_text/$clause.htm") or die;
     my $resp = $ua->request($req);
 
-    write_file("fetched/" . $resp->code . ".$clause", $resp->content);
+    my $fetched_file_name = "fetched/" . $resp->code . ".$clause";
+    print "Writing $fetched_file_name\n";
+#   print $resp->content;
+
+    open my $fh, '>', $fetched_file_name or die "could not open $fetched_file_name - $!";
+    print $fh $resp->content;
+    close $fh;
   
     return '' unless $resp->code == 200;
   
